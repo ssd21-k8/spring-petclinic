@@ -14,7 +14,7 @@ pipeline {
     DEPLOY_GITREPO_TOKEN = credentials('my-github-1')
   }    
   agent {
-    kubernetes {
+    openshift {
       label "spring-petclinic-${myid}"
       instanceCap 1
       defaultContainer 'jnlp'
