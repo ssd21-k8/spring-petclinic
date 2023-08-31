@@ -53,9 +53,6 @@ spec:
     - name: ca-cert
       secret:
         secretName: ca-bundle
-        items:
-        - key: additional-ca-cert-bundle.crt
-          path: additional-ca-cert-bundle.crt
     - name: docker-config
       configMap:
         name: docker-config
@@ -99,36 +96,36 @@ spec:
             }
           } 
         }
-        stage('Static Code Analysis') {
-          steps {
-            container('maven') {
-              withSonarQubeEnv('My SonarQube') { 
-                sh """
-                mvn sonar:sonar \
-                  -Dsonar.projectKey=spring-petclinic \
-                  -Dsonar.host.url=${env.SONAR_HOST_URL} \
-                  -Dsonar.login=${env.SONAR_AUTH_TOKEN}
-                """
-              }
-            }
-          }
-        }  
+        //stage('Static Code Analysis') {
+          //steps {
+            //container('maven') {
+              //withSonarQubeEnv('My SonarQube') { 
+                //sh """
+                //mvn sonar:sonar \
+                  //-Dsonar.projectKey=spring-petclinic \
+                  //-Dsonar.host.url=${env.SONAR_HOST_URL} \
+                  //-Dsonar.login=${env.SONAR_AUTH_TOKEN}
+                //"""
+              //}
+            //}
+          //}
+        //}  
       }
     }
     stage('Containerize') {
       steps {
         container('kaniko') {
           sh "sed -i 's,harbor.example.com,${env.HARBOR_URL},g' Dockerfile"
-          sh "/kaniko/executor --dockerfile Dockerfile --context `pwd` --skip-tls-verify --force --destination=${env.HARBOR_URL}/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}"
+          sh "/kaniko/executor --dockerfile Dockerfile --context `pwd` --skip-tls-verify --destination=sdas1234512/spring-petclinic:v1.0.${env.BUILD_ID}"
         }
       }
     }
-    stage('Image Vulnerability Scan') {
-      steps {
-        writeFile file: 'anchore_images', text: "${env.HARBOR_URL}/library/samples/spring-petclinic:v1.0.${env.BUILD_ID}"
-        anchore name: 'anchore_images'
-      }
-    }
+    //stage('Image Vulnerability Scan') {
+      //steps {
+        //writeFile file: 'anchore_images', text: "sdas1234512/spring-petclinic:v1.0.${env.BUILD_ID}"
+        //anchore name: 'anchore_images'
+      //}
+    //}
     stage('Approval') {
       input {
         message "Proceed to deploy?"
@@ -148,7 +145,7 @@ spec:
             # After cloning
             cd deploy
             # update values.yaml
-            sed -i -r 's,repository: (.+),repository: ${env.HARBOR_URL}/library/samples/spring-petclinic,' values.yaml
+            sed -i -r 's,repository: (.+),repository: sdas1234512/spring-petclinic,' values.yaml
             sed -i 's/tag: v1.0.*/tag: v1.0.${env.BUILD_ID}/' values.yaml
             cat values.yaml
             git commit -am 'bump up version number'
