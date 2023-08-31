@@ -14,7 +14,7 @@ pipeline {
     DEPLOY_GITREPO_TOKEN = credentials('my-github-1')
   }    
   agent {
-    openshift {
+    kubernetes {
       label "spring-petclinic-${myid}"
       instanceCap 1
       defaultContainer 'jnlp'
@@ -25,7 +25,7 @@ metadata:
   namespace: jenkins-workers
 spec:
   # Use service account that can deploy to all namespaces
-  serviceAccountName: default
+  //serviceAccountName: default
   containers:
   - name: maven
     image: maven:3.8.1-openjdk-16
