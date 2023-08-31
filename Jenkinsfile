@@ -25,7 +25,7 @@ metadata:
   namespace: jenkins-workers
 spec:
   # Use service account that can deploy to all namespaces
-  //serviceAccountName: default
+  serviceAccountName: default
   containers:
   - name: maven
     image: maven:3.8.1-openjdk-16
